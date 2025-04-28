@@ -46,6 +46,18 @@ def annotate_memory_space(x, memory_space: str = None):
     return annotate_memory_space_p.bind(x, memory_space=memory_space)
 
 
+def _extract_residuals(vjp_fn: jax.tree_util.Partial):
+    """Extracts the residuals from the vjp_fn."""
+    return jax.tree.leaves(vjp_fn)
+
+
+def _replace_residuals_in_vjp_fn(vjp_fn: jax.tree_util.Partial, new_vjp_fn: jax.tree_util.Partial):
+    """Constructs a vjp_fn with the residuals."""
+    _, treedef = jax.tree.flatten(vjp_fn)
+    new_leaves = _extract_residuals(new_vjp_fn)
+    return jax.tree.unflatten(treedef, new_leaves)
+
+
 # Defines some simple abstractions for holding parameters in two different phases:
 #  1. During the initialization phase, we register parameters here with metadata.
 #  2. During the run phase, parameters are instantiated with values.
@@ -183,8 +195,8 @@ def _stacked_and_pipelined(
                 prev_vjp_fn,
             )
             activation, vjp_fn = jax.vjp(_per_layer_fwd_fn, params, activation)
-            # new_vjp_fn = jax.tree.map(lambda _, y: y, prev_vjp_fn, vjp_fn)
-            return (activation, layer_idx + 1, residuals_on_host, vjp_fn), None
+            new_vjp_fn = _replace_residuals_in_vjp_fn(prev_vjp_fn, vjp_fn)
+            return (activation, layer_idx + 1, residuals_on_host, new_vjp_fn), None
 
         # Pipeline backward for fwd pass.
         # Peels the first layer out.
