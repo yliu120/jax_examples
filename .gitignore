@@ -170,5 +170,10 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
-# PyPI configuration file
-.pypirc
+.vscode
+
+# Bazel
+bazel-*
+
+# Ruff Cache
+.ruff*
