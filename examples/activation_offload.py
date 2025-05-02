@@ -46,16 +46,10 @@ def annotate_memory_space(x, memory_space: str = None):
     return annotate_memory_space_p.bind(x, memory_space=memory_space)
 
 
-def _extract_residuals(vjp_fn: jax.tree_util.Partial):
-    """Extracts the residuals from the vjp_fn."""
-    return jax.tree.leaves(vjp_fn)
-
-
 def _replace_residuals_in_vjp_fn(vjp_fn: jax.tree_util.Partial, new_vjp_fn: jax.tree_util.Partial):
     """Constructs a vjp_fn with the residuals."""
     _, treedef = jax.tree.flatten(vjp_fn)
-    new_leaves = _extract_residuals(new_vjp_fn)
-    return jax.tree.unflatten(treedef, new_leaves)
+    return jax.tree.unflatten(treedef, jax.tree.leaves(new_vjp_fn))
 
 
 # Defines some simple abstractions for holding parameters in two different phases:
@@ -225,10 +219,7 @@ def _stacked_and_pipelined(
             activation_grad, layer_idx, residuals_on_host, vjp_fn = carry
             layer_params_grad, activation_grad = vjp_fn(activation_grad)
             next_vjp_fn = jax.tree.map(
-                lambda x: annotate_memory_space(
-                    jnp.squeeze(jax.lax.dynamic_slice_in_dim(x, layer_idx, 1)),
-                    memory_space="device",
-                ),
+                lambda x: jnp.squeeze(jax.lax.dynamic_slice_in_dim(x, layer_idx, 1)),
                 residuals_on_host,
             )
             return (
