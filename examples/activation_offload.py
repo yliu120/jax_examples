@@ -46,7 +46,9 @@ def annotate_memory_space(x, memory_space: str = None):
     return annotate_memory_space_p.bind(x, memory_space=memory_space)
 
 
-def _replace_residuals_in_vjp_fn(vjp_fn: jax.tree_util.Partial, new_vjp_fn: jax.tree_util.Partial):
+def _replace_residuals_in_vjp_fn(
+    vjp_fn: jax.tree_util.Partial, new_vjp_fn: jax.tree_util.Partial
+):
     """Constructs a vjp_fn with the residuals."""
     _, treedef = jax.tree.flatten(vjp_fn)
     return jax.tree.unflatten(treedef, jax.tree.leaves(new_vjp_fn))
@@ -136,7 +138,10 @@ class LinearLayer:
                 jax.nn.initializers.normal(stddev=0.01),
             )
             self.ctx.register_param(
-                f"{self.name}/b", (self.n_features,), jnp.float32, jax.nn.initializers.zeros
+                f"{self.name}/b",
+                (self.n_features,),
+                jnp.float32,
+                jax.nn.initializers.zeros,
             )
             return x
 
@@ -182,7 +187,9 @@ def _stacked_and_pipelined(
             # Offloads residuals produced by previous layer to host.
             residuals_on_host = jax.tree.map(
                 lambda x, y: annotate_memory_space(
-                    jax.lax.dynamic_update_slice_in_dim(x, y[None, :], layer_idx, axis=0),
+                    jax.lax.dynamic_update_slice_in_dim(
+                        x, y[None, :], layer_idx, axis=0
+                    ),
                     memory_space="host",
                 ),
                 residuals_on_host,
@@ -212,7 +219,9 @@ def _stacked_and_pipelined(
             rest_layer_params,
             length=num_layers - 1,
         )
-        final_activation, last_layer_idx, residuals_on_host, last_vjp_fn = final_fwd_carry
+        final_activation, last_layer_idx, residuals_on_host, last_vjp_fn = (
+            final_fwd_carry
+        )
 
         # Backward pass: pipeline forward for bwd pass.
         def _bwd_body(carry, _):
