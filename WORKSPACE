@@ -46,7 +46,7 @@ python_init_pip()
 load("@rules_python//python:pip.bzl", "pip_parse")
 pip_parse(
     name = "pypi_local",
-    requirements_lock = "//:requirements.txt",
+    requirements_lock = "//third_party/pypi_local:requirements.txt",
 )
 load("@pypi_local//:requirements.bzl", "install_deps")
 install_deps()
@@ -135,3 +135,25 @@ load(
 )
 
 nccl_configure(name = "local_config_nccl")
+
+load("//third_party/pip_nvidia:deps.bzl", "pypi_deps")
+pypi_deps()
+
+load("//third_party/pip_nvidia:pip.bzl", "nvidia_library")
+
+nvidia_library(
+    name = "nvidia-libs",
+    wheels = [
+        "nvidia-cublas-cu12==12.8.4.1",
+        "nvidia-cuda-cupti-cu12==12.8.90",
+        "nvidia-cuda-nvcc-cu12==12.8.93",
+        "nvidia-cuda-runtime-cu12==12.8.90",
+        "nvidia-cudnn-cu12==9.8.0.87",
+        "nvidia-cufft-cu12==11.3.3.83",
+        "nvidia-cusolver-cu12==11.7.3.90",
+        "nvidia-cusparse-cu12==12.5.8.93",
+        "nvidia-nccl-cu12==2.26.2",
+        "nvidia-nvjitlink-cu12==12.8.93",
+        "nvidia-nvshmem-cu12==3.2.5",
+    ],
+)

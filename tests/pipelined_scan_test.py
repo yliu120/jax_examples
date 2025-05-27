@@ -1,5 +1,8 @@
 from functools import partial
 
+from jax_examples.magics.cuda import initialize_cuda
+initialize_cuda()
+
 import jax
 import jax.experimental
 import jax.numpy as jnp

@@ -1,5 +1,8 @@
 import functools
 
+from jax_examples.magics.cuda import initialize_cuda
+initialize_cuda()
+
 import jax
 import jax.numpy as jnp
 import numpy as np
@@ -60,3 +63,7 @@ class MemoryAnnotateOpTest(absltest.TestCase):
         a, b = compiled()
         self.assertEqual(a.shape, (16,))
         self.assertEqual(b.shape, (16,))
+
+
+if __name__ == "__main__":
+    absltest.main()

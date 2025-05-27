@@ -8,3 +8,11 @@ py_library(
         "@jax-src//jax/extend",
     ]
 )
+
+py_library(
+    name = "cuda",
+    srcs = ["cuda.py"],
+    deps = [
+        "@nvidia-libs//:libs",
+    ]
+)

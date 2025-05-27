@@ -6,6 +6,7 @@ py_test(
     srcs = ["ops_test.py"],
     deps = [
         "//magics:ops",
+        "//magics:cuda",
         "@jax-src//jax",
         "@jax-src//jaxlib/cuda:cuda_gpu_support",
         "@jax-src//jaxlib/cuda:cuda_plugin_extension",
@@ -19,6 +20,7 @@ py_test(
     name = "pipelined_scan_test",
     srcs = ["pipelined_scan_test.py"],
     deps = [
+        "//magics:cuda",
         "//magics/transforms:pipelined_scan",
         "@jax-src//jax",
         "@jax-src//jax/extend",

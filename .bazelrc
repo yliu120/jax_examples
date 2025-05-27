@@ -46,7 +46,8 @@ build --host_copt=-mavx
 # CUDA envs
 build --repo_env=TF_NEED_CUDA=1
 build --repo_env=TF_NCCL_USE_STUB=1
-build --repo_env=HERMETIC_CUDA_COMPUTE_CAPABILITIES="sm_80,compute_90"
+# Supports Ampere, Hopper and Blackwell.
+build --repo_env=HERMETIC_CUDA_COMPUTE_CAPABILITIES="sm_80,sm_90,sm_100,compute_120"
 build --repo_env=HERMETIC_CUDA_VERSION="12.8.0"
 build --repo_env=HERMETIC_CUDNN_VERSION="9.8.0"
 build --linkopt="-Wl,--disable-new-dtags"
@@ -60,6 +61,7 @@ common --isatty=1
 common --terminal_columns=187
 common --experimental_repo_remote_exec
 common --nocheck_visibility
+common --@cuda_driver//:enable_forward_compatibility=true
 
 ########################################################
 # Please modify this compiler links to your host envs.
@@ -67,8 +69,5 @@ common --nocheck_visibility
 build --action_env=CLANG_COMPILER_PATH=/usr/lib/llvm-18/bin/clang
 build --repo_env=CC=/usr/lib/llvm-18/bin/clang
 build --repo_env=BAZEL_COMPILER=/usr/lib/llvm-18/bin/clang
-build --repo_env=LOCAL_CUDA_PATH=/usr/local/cuda
-build --repo_env=LOCAL_CUDNN_PATH=/usr/local/cuda/cudnn
-build --repo_env=LOCAL_NCCL_PATH=/usr/local
 ########################################################
 ########################################################
