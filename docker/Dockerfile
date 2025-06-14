@@ -7,7 +7,7 @@ RUN apt-get update \
      make openssh-client openssh-server pkg-config \
      python-is-python3 python3-dev python3-pip \
      software-properties-common \
-     telnet time unzip vim zip zstd
+     telnet time unzip vim zip zstd git
 
 RUN wget https://apt.llvm.org/llvm.sh \
   && bash llvm.sh 18 \
@@ -22,4 +22,5 @@ RUN wget https://github.com/bazelbuild/bazel/releases/download/7.4.1/bazel-7.4.1
   && chmod +x bazel \
   && mv bazel /usr/bin
 
+WORKDIR /root
 CMD ["/bin/bash"]
